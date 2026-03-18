@@ -22,7 +22,7 @@ style = "Italic"
 # ========================================
 
 [window]
-decorations = "None"
+decorations = "Transparent"
 padding = { x = 0, y = 0 }
 dynamic_padding = false
 opacity = 1.0
