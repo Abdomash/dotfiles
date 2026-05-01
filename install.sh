@@ -34,7 +34,7 @@ build_neovim() {
 }
 
 stow_packages() {
-  local packages=(nvim tmux wezterm bin alacritty)
+  local packages=(nvim tmux wezterm bin alacritty opencode)
   for pkg in "${packages[@]}"; do
     if ! stow --simulate "$pkg" >/dev/null 2>&1; then
       echo "Stow conflict detected for package: $pkg"
