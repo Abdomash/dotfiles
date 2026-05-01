@@ -3,95 +3,71 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-BUILD_NVIM=0
+PACKAGES=(nvim tmux wezterm bin alacritty opencode)
 
-if [[ $# -gt 1 ]]; then
-  echo "Usage: install.sh [--build-nvim]"
+if [[ $# -ne 0 ]]; then
+  echo "Usage: install.sh"
   exit 1
 fi
 
-if [[ $# -eq 1 ]]; then
-  if [[ "$1" == "--build-nvim" ]]; then
-    BUILD_NVIM=1
-  else
-    echo "Unknown option: $1"
-    echo "Usage: install.sh [--build-nvim]"
-    exit 1
-  fi
-fi
-
 install_deps() {
-  if [[ $BUILD_NVIM -eq 1 ]]; then
-    INSTALL_NVIM_PACKAGE=0 "${ROOT_DIR}/scripts/install-deps.sh"
+  local os_name
+  os_name="$(uname -s)"
+
+  if [[ "$os_name" == "Darwin" ]]; then
+    if ! xcode-select -p >/dev/null 2>&1; then
+      xcode-select --install
+      echo "Xcode CLI tools installation started. Re-run after it finishes."
+      exit 1
+    fi
+
+    if ! command -v brew >/dev/null 2>&1; then
+      echo "Homebrew not found. Install it first: https://brew.sh"
+      exit 1
+    fi
+
+    brew install stow fzf fd ripgrep cmake ninja gettext git tmux node python pipx go rustup-init lua-language-server rust-analyzer
+    brew install --cask wezterm
+    pipx ensurepath
     return
   fi
 
-  bash "${ROOT_DIR}/scripts/install-deps.sh"
-}
+  if [[ "$os_name" == "Linux" && -f /etc/debian_version ]]; then
+    sudo apt update
+    sudo apt install -y make gcc ripgrep unzip git xclip cmake ninja-build gettext curl build-essential stow fzf fd-find tmux nodejs npm python3 python3-pip pipx golang-go cargo lua-language-server rust-analyzer
+    pipx ensurepath
+    return
+  fi
 
-build_neovim() {
-  bash "${ROOT_DIR}/scripts/build-neovim.sh"
+  echo "Unsupported OS. This script supports macOS and Debian/Ubuntu."
+  exit 1
 }
 
 stow_packages() {
-  local packages=(nvim tmux wezterm bin alacritty opencode)
-  for pkg in "${packages[@]}"; do
-    if ! stow --simulate "$pkg" >/dev/null 2>&1; then
-      echo "Stow conflict detected for package: $pkg"
-      echo "Resolve conflicts and re-run."
-      exit 1
+  local -a succeeded=()
+  local -a failed=()
+  local pkg
+
+  for pkg in "${PACKAGES[@]}"; do
+    if stow --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
+      succeeded+=("$pkg")
+    else
+      failed+=("$pkg")
     fi
   done
 
-  for pkg in "${packages[@]}"; do
-    stow "$pkg"
-  done
-}
+  echo
+  echo "Stow complete."
 
-verify_install() {
-  local fail=0
-
-  if [[ ! -d "$HOME/.config/nvim" ]]; then
-    echo "Missing: $HOME/.config/nvim"
-    fail=1
+  if [[ ${#succeeded[@]} -gt 0 ]]; then
+    echo "Succeeded: ${succeeded[*]}"
   fi
 
-  if [[ ! -f "$HOME/.tmux.conf" ]]; then
-    echo "Missing: $HOME/.tmux.conf"
-    fail=1
+  if [[ ${#failed[@]} -gt 0 ]]; then
+    echo "Failed: ${failed[*]}"
+    return 1
   fi
-
-  if [[ ! -f "$HOME/.wezterm.lua" ]]; then
-    echo "Missing: $HOME/.wezterm.lua"
-    fail=1
-  fi
-
-  if [[ ! -f "$HOME/.config/alacritty/alacritty.toml" ]]; then
-    echo "Missing: $HOME/.config/alacritty/alacritty.toml"
-    fail=1
-  fi
-
-  # Make these warnings instead of errors since the user may not have all of these installed
-  local cmds=(nvim tmux wezterm fzf alacritty)
-  for cmd in "${cmds[@]}"; do
-    if ! command -v "$cmd" >/dev/null 2>&1; then
-      echo "Warning: $cmd is not installed or not in PATH."
-    fi
-  done
-
-  if [[ $fail -ne 0 ]]; then
-    echo "Verification failed."
-    exit 1
-  fi
-
-  echo "Install verified."
 }
 
 install_deps
-
-if [[ $BUILD_NVIM -eq 1 ]]; then
-  build_neovim
-fi
-
 stow_packages
-verify_install

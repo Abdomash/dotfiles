@@ -27,16 +27,12 @@ Simple symlink-based dotfiles with Stow.
 ```bash
 git clone git@github.com:Abdomash/dotfiles.git "$HOME/dotfiles"
 cd "$HOME/dotfiles"
-bash install.sh --build-neovim
+bash install.sh
 ```
 
-This installs the core Neovim dependencies plus common language-server prerequisites:
-
-- `git`, `fzf`, `ripgrep`, `fd`
-- `node`, `npm`
-- `python`, `pipx`
-- `go`
-- `cargo`/Rust tooling
+Neovim is separate:
+`bash scripts/build-neovim.sh`
+`brew install neovim` or `sudo apt install -y neovim`
 
 ### 2. **Add this to your shell config (e.g. `~/.bashrc`)**
 
@@ -47,23 +43,9 @@ source "$HOME/dotfiles/scripts/aliases.sh"
 
 ## Scripts
 
-- `install.sh` installs dependencies, stows packages, and verifies the install.
-- `scripts/install-deps.sh` installs dependencies on macOS or Debian/Ubuntu.
+- `install.sh` installs dependencies and stows packages.
 - `scripts/build-neovim.sh` builds Neovim from source.
 - `scripts/aliases.sh` contains shell aliases.
-
-## Neovim
-
-Neovim doesn't install LSPs, you can install them via:
-
-```bash
-sudo apt install -y lua-language-server rust-analyzer
-npm install -g vtsls typescript typescript-language-server @tailwindcss/language-server vscode-langservers-extracted yaml-language-server
-pipx install basedpyright
-go install golang.org/x/tools/gopls@latest
-```
-
-Replace `apt` with `brew` on macOS.
 
 ## License
 
