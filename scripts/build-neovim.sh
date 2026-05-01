@@ -14,7 +14,7 @@ fi
 if [[ ! -d "$NVIM_SRC_DIR/.git" ]]; then
   git clone --depth 1 --branch "$NVIM_VERSION" "$NVIM_REPO_URL" "$NVIM_SRC_DIR"
 else
-  git -C "$NVIM_SRC_DIR" fetch --tags origin
+  git -C "$NVIM_SRC_DIR" fetch origin tag "$NVIM_VERSION"
   git -C "$NVIM_SRC_DIR" checkout "$NVIM_VERSION"
 fi
 
