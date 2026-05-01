@@ -5,26 +5,40 @@ DIRS=(
     "$HOME/projects"
 )
 
+valid_dirs=()
+for dir in "${DIRS[@]}"; do
+    [[ -d "$dir" ]] && valid_dirs+=("$dir")
+done
+
 if [[ $# -eq 1 ]]; then
     selected=$1
 else
-    selected=$(find "${DIRS[@]}" -mindepth 1 -maxdepth 2 -type d | fzf)
+    selected=$(find "${valid_dirs[@]}" -mindepth 1 -maxdepth 2 -type d | fzf)
 fi
 
 if [[ -z $selected ]]; then
     exit 0
 fi
 
-selected_name=$(basename "$selected" | tr . _)
-tmux_running=$(pgrep tmux)
+selected_name=${selected#"$HOME"/}
+selected_name=${selected_name//\//_}
+selected_name=${selected_name//./_}
 
-if [[ -z $TMUX ]] && [[ -z $tmux_running ]]; then
-    tmux new-session -s $selected_name -c $selected
-    exit 0
+if [[ "$selected_name" == "$selected" ]]; then
+    selected_name=$(basename "$selected")
+    selected_name=${selected_name//./_}
 fi
 
-if ! tmux has-session -t=$selected_name 2> /dev/null; then
-    tmux new-session -ds $selected_name -c $selected
+if ! tmux has-session -t="$selected_name" 2> /dev/null; then
+    if [[ -z $TMUX ]] && ! tmux ls > /dev/null 2>&1; then
+        exec tmux new-session -s "$selected_name" -c "$selected"
+    fi
+
+    tmux new-session -ds "$selected_name" -c "$selected"
 fi
 
-tmux switch-client -t $selected_name
+if [[ -n $TMUX ]]; then
+    tmux switch-client -t "$selected_name"
+else
+    exec tmux attach-session -t "$selected_name"
+fi
