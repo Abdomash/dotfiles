@@ -30,6 +30,14 @@ cd "$HOME/dotfiles"
 bash install.sh --build-neovim
 ```
 
+This installs the core Neovim dependencies plus common language-server prerequisites:
+
+- `git`, `fzf`, `ripgrep`, `fd`
+- `node`, `npm`
+- `python`, `pipx`
+- `go`
+- `cargo`/Rust tooling
+
 ### 2. **Add this to your shell config (e.g. `~/.bashrc`)**
 
 ```bash
@@ -43,6 +51,19 @@ source "$HOME/dotfiles/scripts/aliases.sh"
 - `scripts/install-deps.sh` installs dependencies on macOS or Debian/Ubuntu.
 - `scripts/build-neovim.sh` builds Neovim from source.
 - `scripts/aliases.sh` contains shell aliases.
+
+## Neovim
+
+Neovim doesn't install LSPs, you can install them via:
+
+```bash
+sudo apt install -y lua-language-server rust-analyzer
+npm install -g vtsls typescript typescript-language-server @tailwindcss/language-server vscode-langservers-extracted yaml-language-server
+pipx install basedpyright
+go install golang.org/x/tools/gopls@latest
+```
+
+Replace `apt` with `brew` on macOS.
 
 ## License
 
