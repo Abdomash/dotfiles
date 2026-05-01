@@ -362,10 +362,7 @@ vim.lsp.enable({
   'vtsls',
   'basedpyright',
   'gopls',
-  'rust_analyzer',
-  'tailwindcss',
   'html',
-  'cssls',
   'jsonls',
   'yamlls',
 })

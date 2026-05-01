@@ -3,7 +3,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(nvim tmux wezterm bin alacritty opencode)
+STOW_PACKAGES=(nvim tmux bin alacritty opencode)
 
 if [[ $# -ne 0 ]]; then
   echo "Usage: install.sh"
@@ -15,6 +15,12 @@ install_deps() {
   os_name="$(uname -s)"
 
   if [[ "$os_name" == "Darwin" ]]; then
+    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux)
+    # Comment out NVIM_LSP_DEPS if you want to install Neovim LSP tooling yourself.
+    local -a NVIM_LSP_DEPS=(node python pipx go lua-language-server)
+    # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
+    local -a NVIM_BUILD_DEPS=(cmake ninja gettext)
+
     if ! xcode-select -p >/dev/null 2>&1; then
       xcode-select --install
       echo "Xcode CLI tools installation started. Re-run after it finishes."
@@ -26,16 +32,29 @@ install_deps() {
       exit 1
     fi
 
-    brew install stow fzf fd ripgrep cmake ninja gettext git tmux node python pipx go rustup-init lua-language-server rust-analyzer
-    brew install --cask wezterm
-    pipx ensurepath
+    brew install "${CORE_DEPS[@]}" "${NVIM_LSP_DEPS[@]-}" "${NVIM_BUILD_DEPS[@]-}"
+    if [[ ${NVIM_LSP_DEPS+set} == set ]]; then
+      pipx ensurepath
+      npm install -g @vtsls/language-server vscode-langservers-extracted yaml-language-server
+      pipx install --force basedpyright
+    fi
     return
   fi
 
   if [[ "$os_name" == "Linux" && -f /etc/debian_version ]]; then
+    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux)
+    # Comment out NVIM_LSP_DEPS if you want to install Neovim LSP tooling yourself.
+    local -a NVIM_LSP_DEPS=(nodejs npm python3 python3-pip pipx golang-go lua-language-server)
+    # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
+    local -a NVIM_BUILD_DEPS=(make gcc unzip cmake ninja-build gettext curl build-essential)
+
     sudo apt update
-    sudo apt install -y make gcc ripgrep unzip git xclip cmake ninja-build gettext curl build-essential stow fzf fd-find tmux nodejs npm python3 python3-pip pipx golang-go cargo lua-language-server rust-analyzer
-    pipx ensurepath
+    sudo apt install -y "${CORE_DEPS[@]}" "${NVIM_LSP_DEPS[@]-}" "${NVIM_BUILD_DEPS[@]-}"
+    if [[ ${NVIM_LSP_DEPS+set} == set ]]; then
+      pipx ensurepath
+      sudo npm install -g @vtsls/language-server vscode-langservers-extracted yaml-language-server
+      pipx install --force basedpyright
+    fi
     return
   fi
 
@@ -48,7 +67,7 @@ stow_packages() {
   local -a failed=()
   local pkg
 
-  for pkg in "${PACKAGES[@]}"; do
+  for pkg in "${STOW_PACKAGES[@]}"; do
     if stow --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
       succeeded+=("$pkg")
     else
