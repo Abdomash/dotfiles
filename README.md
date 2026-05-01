@@ -43,16 +43,3 @@ or
 export PATH="$HOME/bin:$PATH"
 source "$HOME/dotfiles/scripts/aliases.sh"
 ```
-
-### Installed dependencies
-
-`install.sh` installs all deps by default, separated into groups:
-
-- `CORE_DEPS`: shell tools and utils
-    `git`, `stow`, `tmux`, `fzf`, `ripgrep`, etc.
-- `NVIM_LSP_DEPS`: Neovim LSP deps
-    `node`, `python`, `go`, `lua-language-server`, etc.
-- `NVIM_BUILD_DEPS`: deps to build Neovim from source
-    `cmake`, `ninja`, `gettext`, `gcc`, etc.
-
-You can comment out any of these groups in `install.sh` if you don't want them.

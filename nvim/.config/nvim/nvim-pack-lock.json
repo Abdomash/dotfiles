@@ -16,6 +16,14 @@
       "rev": "bdc8cd5f33785f0d4f4a245d8ecf11f39df96a92",
       "src": "https://github.com/Skardyy/makurai-nvim"
     },
+    "mason-lspconfig.nvim": {
+      "rev": "0c2823e0418f3d9230ff8b201c976e84de1cb401",
+      "src": "https://github.com/mason-org/mason-lspconfig.nvim"
+    },
+    "mason.nvim": {
+      "rev": "cb8445f8ce85d957416c106b780efd51c6298f89",
+      "src": "https://github.com/mason-org/mason.nvim"
+    },
     "neo-tree.nvim": {
       "rev": "19d20a99bf0061a5ecc4343d2f09fa713306c965",
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
@@ -23,6 +31,10 @@
     "nui.nvim": {
       "rev": "de740991c12411b663994b2860f1a4fd0937c130",
       "src": "https://github.com/muniftanjim/nui.nvim"
+    },
+    "nvim-lspconfig": {
+      "rev": "31026a13eefb20681124706a79fc1df6bf11ab27",
+      "src": "https://github.com/neovim/nvim-lspconfig"
     },
     "nvim-treesitter": {
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",

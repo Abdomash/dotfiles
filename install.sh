@@ -15,9 +15,7 @@ install_deps() {
   os_name="$(uname -s)"
 
   if [[ "$os_name" == "Darwin" ]]; then
-    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux)
-    # Comment out NVIM_LSP_DEPS if you want to install Neovim LSP tooling yourself.
-    local -a NVIM_LSP_DEPS=(node python pipx go lua-language-server)
+    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux wget gnu-tar node python go)
     # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
     local -a NVIM_BUILD_DEPS=(cmake ninja gettext)
 
@@ -32,29 +30,17 @@ install_deps() {
       exit 1
     fi
 
-    brew install "${CORE_DEPS[@]}" "${NVIM_LSP_DEPS[@]-}" "${NVIM_BUILD_DEPS[@]-}"
-    if [[ ${NVIM_LSP_DEPS+set} == set ]]; then
-      pipx ensurepath
-      npm install -g @vtsls/language-server vscode-langservers-extracted yaml-language-server
-      pipx install --force basedpyright
-    fi
+    brew install "${CORE_DEPS[@]}" "${NVIM_BUILD_DEPS[@]-}"
     return
   fi
 
   if [[ "$os_name" == "Linux" && -f /etc/debian_version ]]; then
-    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux)
-    # Comment out NVIM_LSP_DEPS if you want to install Neovim LSP tooling yourself.
-    local -a NVIM_LSP_DEPS=(nodejs npm python3 python3-pip pipx golang-go lua-language-server)
+    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux curl unzip tar gzip nodejs npm python3 golang-go)
     # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
     local -a NVIM_BUILD_DEPS=(make gcc unzip cmake ninja-build gettext curl build-essential)
 
     sudo apt update
-    sudo apt install -y "${CORE_DEPS[@]}" "${NVIM_LSP_DEPS[@]-}" "${NVIM_BUILD_DEPS[@]-}"
-    if [[ ${NVIM_LSP_DEPS+set} == set ]]; then
-      pipx ensurepath
-      sudo npm install -g @vtsls/language-server vscode-langservers-extracted yaml-language-server
-      pipx install --force basedpyright
-    fi
+    sudo apt install -y "${CORE_DEPS[@]}" "${NVIM_BUILD_DEPS[@]-}"
     return
   fi
 

@@ -67,7 +67,10 @@ vim.pack.add({
   { src = 'https://github.com/ibhagwan/fzf-lua' },
   { src = 'https://github.com/lewis6991/gitsigns.nvim' },
   { src = 'https://github.com/github/copilot.vim' },
+  { src = 'https://github.com/mason-org/mason.nvim' },
+  { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
   { src = 'https://github.com/nvim-lua/plenary.nvim' },
+  { src = 'https://github.com/neovim/nvim-lspconfig' },
   { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim' },
   { src = 'https://github.com/nvim-tree/nvim-web-devicons' },
   { src = 'https://github.com/nvim-treesitter/nvim-treesitter' },
@@ -83,7 +86,10 @@ for _, plugin in ipairs({
   'fzf-lua',
   'gitsigns.nvim',
   'copilot.vim',
+  'mason.nvim',
+  'mason-lspconfig.nvim',
   'plenary.nvim',
+  'nvim-lspconfig',
   'neo-tree.nvim',
   'nvim-web-devicons',
   'nvim-treesitter',
@@ -192,6 +198,27 @@ if gitsigns_ok then
       border = 'rounded',
       style = 'minimal',
       relative = 'cursor',
+    },
+  })
+end
+
+local mason_ok, mason = pcall(require, 'mason')
+if mason_ok then
+  mason.setup()
+end
+
+local mason_lspconfig_ok, mason_lspconfig = pcall(require, 'mason-lspconfig')
+if mason_lspconfig_ok then
+  mason_lspconfig.setup({
+    ensure_installed = {
+      'lua_ls',
+      'marksman',
+      'vtsls',
+      'basedpyright',
+      'gopls',
+      'html',
+      'jsonls',
+      'yamlls',
     },
   })
 end
@@ -355,14 +382,4 @@ vim.lsp.config('basedpyright', {
       },
     },
   },
-})
-
-vim.lsp.enable({
-  'lua_ls',
-  'vtsls',
-  'basedpyright',
-  'gopls',
-  'html',
-  'jsonls',
-  'yamlls',
 })
