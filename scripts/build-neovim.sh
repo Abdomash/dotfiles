@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-NVIM_VERSION="v0.11.6"
+NVIM_VERSION="v0.12.2"
 NVIM_SRC_DIR="${HOME}/neovim"
 
 if [[ -d "$NVIM_SRC_DIR/.git" ]]; then
