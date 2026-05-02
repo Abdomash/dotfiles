@@ -21,24 +21,12 @@ if [[ -z $selected ]]; then
 fi
 
 selected_name=${selected#"$HOME"/}
-selected_name=${selected_name//\//_}
-selected_name=${selected_name//./_}
-
-if [[ "$selected_name" == "$selected" ]]; then
-    selected_name=$(basename "$selected")
-    selected_name=${selected_name//./_}
-fi
-
-if ! tmux has-session -t="$selected_name" 2> /dev/null; then
-    if [[ -z $TMUX ]] && ! tmux ls > /dev/null 2>&1; then
-        exec tmux new-session -s "$selected_name" -c "$selected"
-    fi
-
-    tmux new-session -ds "$selected_name" -c "$selected"
-fi
+[[ "$selected_name" == "$selected" ]] && selected_name=${selected##*/}
+selected_name=${selected_name//[\/.]/_}
 
 if [[ -n $TMUX ]]; then
+    tmux new-session -Ads "$selected_name" -c "$selected"
     tmux switch-client -t "$selected_name"
 else
-    exec tmux attach-session -t "$selected_name"
+    exec tmux new-session -As "$selected_name" -c "$selected"
 fi
