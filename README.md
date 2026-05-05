@@ -37,7 +37,7 @@ or
 ```sudo apt install -y neovim```
 
 
-3. Add this to your shell config:
+4. Add this to your shell config (e.g. `~/.bashrc` or `~/.zshrc`):
 
 ```bash
 export PATH="$HOME/bin:$PATH"
