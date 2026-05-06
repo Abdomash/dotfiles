@@ -15,7 +15,7 @@ install_deps() {
   os_name="$(uname -s)"
 
   if [[ "$os_name" == "Darwin" ]]; then
-    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux wget gnu-tar node python go)
+    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux wget gnu-tar node python go tree-sitter-cli)
     # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
     local -a NVIM_BUILD_DEPS=(cmake ninja gettext)
 
@@ -35,7 +35,7 @@ install_deps() {
   fi
 
   if [[ "$os_name" == "Linux" && -f /etc/debian_version ]]; then
-    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux curl unzip tar gzip nodejs npm python3 golang-go)
+    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux curl unzip tar gzip nodejs npm python3 golang-go tree-sitter-cli)
     # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
     local -a NVIM_BUILD_DEPS=(make gcc unzip cmake ninja-build gettext curl build-essential)
 
