@@ -104,6 +104,9 @@ local ts_languages = {
   'bash',
   'css',
   'go',
+  'gomod',
+  'gosum',
+  'gowork',
   'html',
   'javascript',
   'json',
@@ -118,16 +121,17 @@ local ts_languages = {
   'yaml',
 }
 
-local ts_install_ok, ts_install = pcall(require, 'nvim-treesitter.install')
-local ts_configs_ok, ts_configs = pcall(require, 'nvim-treesitter.configs')
-if ts_install_ok and ts_configs_ok then
-  ts_install.prefer_git = true
-  ts_configs.setup({
-    ensure_installed = ts_languages,
-    auto_install = true,
-    sync_install = false,
-    highlight = { enable = true },
-    indent = { enable = true },
+local treesitter_ok, treesitter = pcall(require, 'nvim-treesitter')
+if treesitter_ok then
+  treesitter.install(ts_languages)
+
+  vim.api.nvim_create_autocmd('FileType', {
+    group = augroup('minimal-treesitter'),
+    pattern = ts_languages,
+    callback = function()
+      pcall(vim.treesitter.start)
+      vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+    end,
   })
 end
 
