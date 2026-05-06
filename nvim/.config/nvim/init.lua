@@ -47,6 +47,27 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+local ts_languages = {
+  'bash',
+  'css',
+  'go',
+  'gomod',
+  'gosum',
+  'gowork',
+  'html',
+  'javascript',
+  'json',
+  'lua',
+  'markdown',
+  'python',
+  'rust',
+  'tsx',
+  'typescript',
+  'vim',
+  'vimdoc',
+  'yaml',
+}
+
 vim.api.nvim_create_autocmd('PackChanged', {
   group = augroup('minimal-pack-hooks'),
   callback = function(ev)
@@ -57,7 +78,10 @@ vim.api.nvim_create_autocmd('PackChanged', {
 
     if data.kind == 'install' or data.kind == 'update' then
       vim.cmd.packadd('nvim-treesitter')
-      pcall(vim.cmd, 'TSUpdateSync')
+      local ok, treesitter = pcall(require, 'nvim-treesitter')
+      if ok then
+        pcall(treesitter.install, ts_languages)
+      end
     end
   end,
 })
@@ -100,31 +124,8 @@ end
 
 pcall(vim.cmd.colorscheme, 'makurai_dark')
 
-local ts_languages = {
-  'bash',
-  'css',
-  'go',
-  'gomod',
-  'gosum',
-  'gowork',
-  'html',
-  'javascript',
-  'json',
-  'lua',
-  'markdown',
-  'python',
-  'rust',
-  'tsx',
-  'typescript',
-  'vim',
-  'vimdoc',
-  'yaml',
-}
-
-local treesitter_ok, treesitter = pcall(require, 'nvim-treesitter')
+local treesitter_ok = pcall(require, 'nvim-treesitter')
 if treesitter_ok then
-  treesitter.install(ts_languages)
-
   vim.api.nvim_create_autocmd('FileType', {
     group = augroup('minimal-treesitter'),
     pattern = ts_languages,
