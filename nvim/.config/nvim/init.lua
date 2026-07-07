@@ -94,6 +94,8 @@ vim.api.nvim_create_autocmd('PackChanged', {
   end,
 })
 
+local ts_ok = pcall(require, 'nvim-treesitter')
+
 vim.api.nvim_create_autocmd('FileType', {
   group = augroup('minimal-treesitter'),
   pattern = ts_languages,
