@@ -43,3 +43,11 @@ or
 export PATH="$HOME/bin:$PATH"
 source "$HOME/dotfiles/scripts/aliases.sh"
 ```
+
+## Manual Stow
+
+If you already ran `install.sh` and just want to re-symlink after adding or moving files:
+
+```bash
+stow -R --dir . --target ~ nvim tmux bin alacritty opencode
+```
