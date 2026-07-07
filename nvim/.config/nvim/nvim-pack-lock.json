@@ -24,13 +24,9 @@
       "rev": "cb8445f8ce85d957416c106b780efd51c6298f89",
       "src": "https://github.com/mason-org/mason.nvim"
     },
-    "neo-tree.nvim": {
-      "rev": "19d20a99bf0061a5ecc4343d2f09fa713306c965",
-      "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
-    },
-    "nui.nvim": {
-      "rev": "de740991c12411b663994b2860f1a4fd0937c130",
-      "src": "https://github.com/muniftanjim/nui.nvim"
+    "mini.nvim": {
+      "rev": "d74190c1528aaf12ba5f3a29d03524c6b81e18b3",
+      "src": "https://github.com/echasnovski/mini.nvim"
     },
     "nvim-lspconfig": {
       "rev": "31026a13eefb20681124706a79fc1df6bf11ab27",
@@ -39,14 +35,6 @@
     "nvim-treesitter": {
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
-    },
-    "nvim-web-devicons": {
-      "rev": "4fc505ac7bd7692824a142e96e5f529c133862f8",
-      "src": "https://github.com/nvim-tree/nvim-web-devicons"
-    },
-    "plenary.nvim": {
-      "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
-      "src": "https://github.com/nvim-lua/plenary.nvim"
     }
   }
 }
