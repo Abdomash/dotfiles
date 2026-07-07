@@ -1,78 +1,72 @@
 #!/usr/bin/env bash
+# Install system dependencies and stow dotfiles.
+# Supports macOS (via Homebrew) and Debian/Ubuntu (apt).
 
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STOW_PACKAGES=(nvim tmux bin alacritty opencode)
 
-if [[ $# -ne 0 ]]; then
-  echo "Usage: install.sh"
+# ==========================================
+# DEPENDENCIES
+# ==========================================
+
+# Shared utils
+SHARED_CORE_DEPS=(git stow fzf ripgrep tmux tree-sitter-cli)
+
+# Core utils
+MACOS_CORE_DEPS=(fd node python go wget gnu-tar)
+DEBIAN_CORE_DEPS=(fd-find nodejs npm python3 golang-go curl unzip tar gzip xclip)
+
+# Neovim build dependencies (comment out if you don't need to build Neovim)
+MACOS_BUILD_DEPS=(cmake ninja gettext)
+DEBIAN_BUILD_DEPS=(make gcc cmake ninja-build gettext build-essential)
+
+# ==========================================
+
+# --- Install dependencies ---
+
+os_name="$(uname -s)"
+
+if [[ "$os_name" == "Darwin" ]]; then
+  if ! xcode-select -p >/dev/null 2>&1; then
+    xcode-select --install
+    echo "Xcode CLI tools installation started. Re-run after it finishes."
+    exit 1
+  fi
+
+  if ! command -v brew >/dev/null 2>&1; then
+    echo "Homebrew not found. Install it first: https://brew.sh"
+    exit 1
+  fi
+
+  brew install "${SHARED_CORE_DEPS[@]}" "${MACOS_CORE_DEPS[@]}" "${MACOS_BUILD_DEPS[@]-}"
+
+elif [[ "$os_name" == "Linux" ]]; then
+  if [[ ! -f /etc/debian_version ]]; then
+    echo "Unsupported Linux. This script supports Debian/Ubuntu."
+    exit 1
+  fi
+
+  sudo apt update
+  sudo apt install -y "${SHARED_CORE_DEPS[@]}" "${DEBIAN_CORE_DEPS[@]}" "${DEBIAN_BUILD_DEPS[@]-}"
+
+else
+  echo "Unsupported OS. This script supports macOS and Debian/Ubuntu."
   exit 1
 fi
 
-install_deps() {
-  local os_name
-  os_name="$(uname -s)"
+# --- Stow dotfiles ---
 
-  if [[ "$os_name" == "Darwin" ]]; then
-    local -a CORE_DEPS=(stow fzf fd ripgrep git tmux wget gnu-tar node python go tree-sitter-cli)
-    # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
-    local -a NVIM_BUILD_DEPS=(cmake ninja gettext)
+stow_exit_code=0
 
-    if ! xcode-select -p >/dev/null 2>&1; then
-      xcode-select --install
-      echo "Xcode CLI tools installation started. Re-run after it finishes."
-      exit 1
-    fi
-
-    if ! command -v brew >/dev/null 2>&1; then
-      echo "Homebrew not found. Install it first: https://brew.sh"
-      exit 1
-    fi
-
-    brew install "${CORE_DEPS[@]}" "${NVIM_BUILD_DEPS[@]-}"
-    return
+for pkg in "${STOW_PACKAGES[@]}"; do
+  if stow --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
+    echo "  [OK] $pkg"
+  else
+    echo "  [FAIL] $pkg"
+    stow_exit_code=1
   fi
+done
 
-  if [[ "$os_name" == "Linux" && -f /etc/debian_version ]]; then
-    local -a CORE_DEPS=(git xclip stow fzf fd-find ripgrep tmux curl unzip tar gzip nodejs npm python3 golang-go tree-sitter-cli)
-    # Comment out NVIM_BUILD_DEPS if you do not build Neovim from source.
-    local -a NVIM_BUILD_DEPS=(make gcc unzip cmake ninja-build gettext curl build-essential)
-
-    sudo apt update
-    sudo apt install -y "${CORE_DEPS[@]}" "${NVIM_BUILD_DEPS[@]-}"
-    return
-  fi
-
-  echo "Unsupported OS. This script supports macOS and Debian/Ubuntu."
-  exit 1
-}
-
-stow_packages() {
-  local -a succeeded=()
-  local -a failed=()
-  local pkg
-
-  for pkg in "${STOW_PACKAGES[@]}"; do
-    if stow --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
-      succeeded+=("$pkg")
-    else
-      failed+=("$pkg")
-    fi
-  done
-
-  echo
-  echo "Stow complete."
-
-  if [[ ${#succeeded[@]} -gt 0 ]]; then
-    echo "Succeeded: ${succeeded[*]}"
-  fi
-
-  if [[ ${#failed[@]} -gt 0 ]]; then
-    echo "Failed: ${failed[*]}"
-    return 1
-  fi
-}
-
-install_deps
-stow_packages
+exit "$stow_exit_code"
