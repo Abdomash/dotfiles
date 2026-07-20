@@ -70,7 +70,10 @@ vim.pack.add({
   { src = 'https://github.com/github/copilot.vim' },
   { src = 'https://github.com/mason-org/mason.nvim' },
   { src = 'https://github.com/mason-org/mason-lspconfig.nvim' },
+  { src = 'https://github.com/MunifTanjim/nui.nvim' },
   { src = 'https://github.com/neovim/nvim-lspconfig' },
+  { src = 'https://github.com/nvim-lua/plenary.nvim' },
+  { src = 'https://github.com/nvim-neo-tree/neo-tree.nvim', version = vim.version.range('3') },
   { src = 'https://github.com/nvim-treesitter/nvim-treesitter' },
   { src = 'https://github.com/echasnovski/mini.nvim' },
 })
@@ -139,11 +142,11 @@ if mini_icons_ok then
   mini_icons.mock_nvim_web_devicons()
 end
 
-local mini_files_ok, mini_files = pcall(require, 'mini.files')
-if mini_files_ok then
-  mini_files.setup({
-    mappings = {
-      close = '<esc>',
+local neo_tree_ok, neo_tree = pcall(require, 'neo-tree')
+if neo_tree_ok then
+  neo_tree.setup({
+    filesystem = {
+      hijack_netrw_behavior = 'open_current',
     },
   })
 end
@@ -207,10 +210,8 @@ map('n', '<C-j>', '<C-w><C-j>', { desc = 'Move to lower split' })
 map('n', '<C-k>', '<C-w><C-k>', { desc = 'Move to upper split' })
 map('n', '<C-l>', '<C-w><C-l>', { desc = 'Move to right split' })
 
-if mini_files_ok then
-  map('n', '<leader>pv', function()
-    mini_files.open()
-  end, { desc = 'Open file explorer' })
+if neo_tree_ok then
+  map('n', '<leader>pv', '<cmd>Neotree current reveal<cr>', { desc = 'Open file explorer' })
 end
 
 if fzf_ok then
@@ -249,19 +250,6 @@ if gitsigns_ok then
   map('n', '<leader>hd', gitsigns.diffthis, { desc = 'Diff current file' })
 end
 
-vim.api.nvim_create_autocmd('UiEnter', {
-  group = augroup('minimal-open-directory'),
-  callback = function()
-    local path = vim.api.nvim_buf_get_name(0)
-    local stat = (vim.uv or vim.loop).fs_stat(path)
-    if stat and stat.type == 'directory' then
-      if mini_files_ok then
-        mini_files.open(path)
-      end
-    end
-  end,
-})
-
 vim.api.nvim_create_autocmd('LspAttach', {
   group = augroup('minimal-lsp-attach'),
   callback = function(ev)
@@ -286,6 +274,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
     end
 
     local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_completion, ev.buf) then
+      vim.lsp.completion.enable(true, client.id, ev.buf, { autotrigger = true })
+    end
+
     if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, ev.buf) then
       local group = augroup('minimal-lsp-highlight-' .. ev.buf)
       vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
