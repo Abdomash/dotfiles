@@ -36,6 +36,10 @@ or
 
 ```sudo apt install -y neovim```
 
+To remove Neovim caches, plugins, state, and source before a fresh rebuild:
+
+```bash scripts/clean-neovim.sh```
+
 
 4. Add this to your shell config (e.g. `~/.bashrc` or `~/.zshrc`):
 
