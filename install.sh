@@ -16,7 +16,7 @@ SHARED_CORE_DEPS=(git stow fzf ripgrep tmux tree-sitter-cli)
 
 # Core utils
 MACOS_CORE_DEPS=(fd node python go wget gnu-tar)
-DEBIAN_CORE_DEPS=(fd-find nodejs npm python3 golang-go curl unzip tar gzip xclip)
+DEBIAN_CORE_DEPS=(fd-find nodejs npm python3 python3-venv golang-go curl unzip tar gzip xclip)
 
 # Neovim build dependencies (comment out if you don't need to build Neovim)
 MACOS_BUILD_DEPS=(cmake ninja gettext)
