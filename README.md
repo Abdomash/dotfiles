@@ -12,6 +12,8 @@ Simple symlink-based dotfiles with Stow.
 - `alacritty/` -> Alacritty config (stow package)
 - `bin/` -> executables on PATH
 - `opencode/` -> personal OpenCode config (stow package)
+- `agents/` -> shared agent skills in `~/.agents/skills` (Codex, OpenCode, T3 Code)
+- `claude/` -> symlinks exposing those skills to Claude Code in `~/.claude/skills`
 - `scripts/` -> setup/build scripts
 
 ## Install
@@ -54,4 +56,5 @@ If you already ran `install.sh` and just want to re-symlink after adding or movi
 
 ```bash
 stow -R --dir . --target ~ nvim tmux bin alacritty opencode
+stow -R --no-folding --dir . --target ~ agents claude
 ```
