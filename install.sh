@@ -6,6 +6,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STOW_PACKAGES=(nvim tmux bin alacritty opencode)
+# Stowed with --no-folding so tools writing into ~/.claude or ~/.agents never write into this repo
+NO_FOLD_PACKAGES=(agents claude)
 
 # ==========================================
 # DEPENDENCIES
@@ -62,6 +64,15 @@ stow_exit_code=0
 
 for pkg in "${STOW_PACKAGES[@]}"; do
   if stow --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
+    echo "  [OK] $pkg"
+  else
+    echo "  [FAIL] $pkg"
+    stow_exit_code=1
+  fi
+done
+
+for pkg in "${NO_FOLD_PACKAGES[@]}"; do
+  if stow --no-folding --dir "$ROOT_DIR" --target "$HOME" "$pkg"; then
     echo "  [OK] $pkg"
   else
     echo "  [FAIL] $pkg"
