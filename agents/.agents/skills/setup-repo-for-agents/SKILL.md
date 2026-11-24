@@ -119,8 +119,10 @@ and worktrees, in AGENTS.md instead of a skill.
 
 If the repo runs multi-agent workflows, add a `workflow` skill that says:
 
-- Merge phases so each agent does a whole job (build plus self-check; checks, e2e and
-  screenshots; review; fix) rather than giving one agent to each command.
+- Use few agents, each with a whole job, such as building and checking a component or
+  running the end-to-end checks and capturing screenshots. Every agent spends time
+  learning the repo, so run phases in sequence and add parallel agents only for work
+  that is truly independent.
 - Use per-phase checks or one thorough final review, not both.
 - Pass existing worktree paths along instead of creating new worktrees.
 - Describe how much reasoning each stage needs instead of naming models.
