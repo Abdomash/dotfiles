@@ -6,8 +6,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STOW_PACKAGES=(nvim tmux bin alacritty opencode)
-# Stowed with --no-folding so tools writing into ~/.claude or ~/.agents never write into this repo
-NO_FOLD_PACKAGES=(agents claude)
+# Stowed with --no-folding so tools writing into ~/.claude, ~/.codex or ~/.agents never write into this repo
+NO_FOLD_PACKAGES=(agents claude codex)
 
 # ==========================================
 # DEPENDENCIES
